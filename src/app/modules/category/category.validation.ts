@@ -5,6 +5,7 @@ const createCategoryValidationSchema = z.object({
         name: z
             .string({ required_error: 'Category name is required' })
             .min(1, 'Category name is required'),
+        parentCategory: z.string().optional(),
         // category_image: z.string({
         //     required_error: 'Category image is required',
         // }),
@@ -22,6 +23,8 @@ const updateCategoryValidationSchema = z.object({
                 required_error: 'Category image is required',
             })
             .optional(),
+
+        parentCategory: z.string().optional(),
     }),
 });
 

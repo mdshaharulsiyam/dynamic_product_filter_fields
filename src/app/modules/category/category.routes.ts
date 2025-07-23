@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post(
     '/create-category',
-    auth(USER_ROLE.superAdmin),
+    // auth(USER_ROLE.superAdmin),
     // uploadImages(),
     uploadFile(),
     (req: Request, res: Response, next: NextFunction) => {
@@ -24,7 +24,7 @@ router.post(
 );
 router.patch(
     '/update-category/:id',
-    auth(USER_ROLE.superAdmin),
+    // auth(USER_ROLE.superAdmin),
     uploadFile(),
     (req: Request, res: Response, next: NextFunction) => {
         if (req.body.data) {

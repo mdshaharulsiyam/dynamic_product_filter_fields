@@ -4,7 +4,7 @@ import { ICategory } from './category.interface';
 const CategorySchema: Schema = new Schema<ICategory>(
     {
         name: { type: String, required: true, unique: true },
-        category_image: { type: String, required: true },
+        category_image: { type: String },
         parentCategory: {
             type: Schema.Types.ObjectId,
             ref: 'Category',
