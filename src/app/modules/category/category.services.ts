@@ -98,7 +98,7 @@ const getAllCategories = async (query: Record<string, any>) => {
         },
         {
             $project: {
-                subcategories: 0, // remove subcategories array
+                subcategories: 1, // remove subcategories array
             },
         },
         {
