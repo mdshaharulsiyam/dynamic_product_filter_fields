@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ENUM_GENDER } from './normalUser.enum';
 const locationSchema = z.object({
     type: z.literal('Point'),
     coordinates: z
@@ -27,10 +28,16 @@ const registerNormalUserValidationSchema = z.object({
 
 const updateNormalUserValidationSchema = z.object({
     body: z.object({
-        name: z
+        firstName: z
             .string({
-                required_error: 'Name is required',
-                invalid_type_error: 'Name must be a string',
+                required_error: 'First name is required',
+                invalid_type_error: 'First name must be a string',
+            })
+            .optional(),
+        lastName: z
+            .string({
+                required_error: 'Last name is required',
+                invalid_type_error: 'Last name must be a string',
             })
             .optional(),
         email: z.string().email('Invalid email format').optional(),
@@ -38,8 +45,15 @@ const updateNormalUserValidationSchema = z.object({
         location: locationSchema.optional(),
         address: z.string().optional(),
         dateOfBirth: z
-            .string({ required_error: 'Date of birth is required' })
+            .string()
+            .refine((val) => !isNaN(Date.parse(val)), {
+                message: 'Invalid date format',
+            })
             .optional(),
+        gender: z
+            .enum(Object.values(ENUM_GENDER) as [string, ...string[]])
+            .optional(),
+        nationality: z.string().optional(),
     }),
 });
 

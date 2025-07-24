@@ -1,52 +1,42 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { INormalUser } from './normalUser.interface';
+import { ENUM_GENDER } from './normalUser.enum';
+
+const LocationSchema = new Schema({
+    type: {
+        type: String,
+        enum: ['Point'],
+        required: true,
+    },
+    coordinates: {
+        type: [Number],
+        required: true,
+    },
+});
 
 const NormalUserSchema = new Schema<INormalUser>(
     {
-        user: {
-            type: Schema.Types.ObjectId,
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        firstName: { type: String, required: true },
+        lastName: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        dateOfBirth: { type: Date, required: true },
+        gender: {
+            type: String,
+            enum: Object.values(ENUM_GENDER),
+        },
+        nationality: { type: String },
+        profile_image: { type: String },
+        location: {
+            type: LocationSchema,
             required: true,
-            ref: 'User',
-        },
-        name: {
-            type: String,
-            required: true,
-        },
-        email: {
-            type: String,
-            default: '',
-        },
-        phone: {
-            type: String,
-        },
-        profile_image: {
-            type: String,
-            default: '',
-        },
-        profile_cover: {
-            type: String,
-            default: '',
         },
 
-        location: {
-            type: {
-                type: String,
-                enum: ['Point'],
-                default: 'Point',
-            },
-            coordinates: {
-                type: [Number], // ✅ removed required: true to make it optional
-            },
-        },
-        address: {
-            type: String,
-        },
+        address: { type: String, required: true },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
-const NormalUser = model<INormalUser>('NormalUser', NormalUserSchema);
+const NormalUser = mongoose.model<INormalUser>('NormalUser', NormalUserSchema);
 
 export default NormalUser;
