@@ -194,11 +194,20 @@ const deleteUserAccount = async (user: JwtPayload, password: string) => {
 const getMyProfile = async (userData: JwtPayload) => {
     let result = null;
     if (userData.role === USER_ROLE.user) {
-        result = await NormalUser.findById(userData.profileId);
+        result = await NormalUser.findById(userData.profileId).populate({
+            path: 'user',
+            select: 'role',
+        });
     } else if (userData.role === USER_ROLE.superAdmin) {
-        result = await SuperAdmin.findById(userData.profileId);
+        result = await SuperAdmin.findById(userData.profileId).populate({
+            path: 'user',
+            select: 'role',
+        });
     } else if (userData.role === USER_ROLE.admin) {
-        result = await Admin.findById(userData.profileId);
+        result = await Admin.findById(userData.profileId).populate({
+            path: 'user',
+            select: 'role',
+        });
     }
     return result;
 };
