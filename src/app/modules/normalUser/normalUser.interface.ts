@@ -17,5 +17,5 @@ export interface INormalUser {
         type: 'Point';
         coordinates: [number, number];
     };
-    address: string;
+    city: string;
 }

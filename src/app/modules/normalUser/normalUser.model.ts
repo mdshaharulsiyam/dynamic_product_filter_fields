@@ -32,7 +32,7 @@ const NormalUserSchema = new Schema<INormalUser>(
             required: true,
         },
 
-        address: { type: String, required: true },
+        city: { type: String, required: true },
     },
     { timestamps: true }
 );

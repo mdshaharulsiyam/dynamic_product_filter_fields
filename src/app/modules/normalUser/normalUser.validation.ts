@@ -14,15 +14,18 @@ const registerNormalUserValidationSchema = z.object({
         confirmPassword: z
             .string({ required_error: 'Confirm password is required' })
             .min(6, { message: 'Password must be at least 6 characters' }),
-        name: z.string({
-            required_error: 'Name is required',
-            invalid_type_error: 'Name must be a string',
+        firstName: z.string({
+            required_error: 'First name is required',
+            invalid_type_error: 'First name must be a string',
+        }),
+        lastName: z.string({
+            required_error: 'Last name is required',
+            invalid_type_error: 'Last name must be a string',
         }),
         email: z.string().email('Invalid email format'),
         phone: z.string().optional(),
-        // location: locationSchema.optional(),
-        address: z.string({ required_error: 'Address is required' }),
-        dateOfBirth: z.string({ required_error: 'Date of birth is required' }),
+        city: z.string().optional(),
+        dateOfBirth: z.string().optional(),
     }),
 });
 

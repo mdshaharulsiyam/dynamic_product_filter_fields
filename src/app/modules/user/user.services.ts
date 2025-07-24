@@ -49,7 +49,7 @@ const registerUser = async (
         const userDataPayload: Partial<TUser> = {
             email: userData?.email,
             password: password,
-            role: payload.role,
+            role: USER_ROLE.user,
             verifyCode,
             codeExpireIn: new Date(Date.now() + 5 * 60000),
         };
