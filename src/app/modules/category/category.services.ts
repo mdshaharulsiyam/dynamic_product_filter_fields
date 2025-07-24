@@ -9,7 +9,6 @@ import mongoose from 'mongoose';
 
 // create category into db
 const createCategoryIntoDB = async (payload: ICategory) => {
-    console.log('payload', payload);
     if (payload.parentCategory) {
         const cateogry = await Category.exists({ _id: payload.parentCategory });
         if (!cateogry) {
@@ -19,6 +18,16 @@ const createCategoryIntoDB = async (payload: ICategory) => {
             );
         }
     }
+    const sameCategory = await Category.findOne({ name: payload.name });
+    if (sameCategory?.isDeleted) {
+        const result = await Category.findByIdAndUpdate(
+            sameCategory._id,
+            { isDeleted: false },
+            { new: true, runValidators: true }
+        );
+        return result;
+    }
+
     const result = await Category.create(payload);
     return result;
 };

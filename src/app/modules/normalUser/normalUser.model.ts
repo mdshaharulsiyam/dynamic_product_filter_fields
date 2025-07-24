@@ -29,7 +29,6 @@ const NormalUserSchema = new Schema<INormalUser>(
         profile_image: { type: String },
         location: {
             type: LocationSchema,
-            required: true,
         },
 
         city: { type: String, required: true },

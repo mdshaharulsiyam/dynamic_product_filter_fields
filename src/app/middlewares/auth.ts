@@ -46,20 +46,17 @@ const auth = (...requiredRoles: TUserRole[]) => {
                     httpStatus.NOT_FOUND,
                     'This user does not exist'
                 );
-            }
-            if (user.isDeleted) {
+            } else if (user.isDeleted) {
                 throw new AppError(
                     httpStatus.FORBIDDEN,
                     'This user is already deleted'
                 );
-            }
-            if (user.isBlocked) {
+            } else if (user.isBlocked) {
                 throw new AppError(
                     httpStatus.FORBIDDEN,
                     'This user is blocked'
                 );
-            }
-            if (!user?.isVerified) {
+            } else if (!user?.isVerified) {
                 throw new AppError(
                     httpStatus.BAD_REQUEST,
                     'You are not verified user'
