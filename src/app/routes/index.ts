@@ -10,6 +10,7 @@ import { feedbackRoutes } from '../modules/feedback/feedback.routes';
 import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 import { albumRoutes } from '../modules/album/album.routes';
 import { categoryRoutes } from '../modules/category/category.routes';
+import { addressRoutes } from '../modules/address/address.routes';
 
 const router = Router();
 
@@ -60,6 +61,10 @@ const moduleRoutes = [
     {
         path: '/category',
         router: categoryRoutes,
+    },
+    {
+        path: '/address',
+        router: addressRoutes,
     },
 ];
 

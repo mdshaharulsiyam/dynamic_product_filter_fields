@@ -1,25 +1,28 @@
 import express from 'express';
 import auth from '../../middlewares/auth';
 import { USER_ROLE } from '../user/user.constant';
-import validateRequest from '../../middlewares/validateRequest';
-import addressValidations from './address.validation';
 import addressController from './address.controller';
-import { uploadFile } from '../../helper/fileUploader';
 
 const router = express.Router();
 
-router.patch(
-    '/update-profile',
+router.post('/create', auth(USER_ROLE.user), addressController.createAddress);
+
+router.get(
+    '/my-addresses',
     auth(USER_ROLE.user),
-    uploadFile(),
-    (req, res, next) => {
-        if (req.body.data) {
-            req.body = JSON.parse(req.body.data);
-        }
-        next();
-    },
-    validateRequest(addressValidations.updateAddressData),
-    addressController.updateUserProfile
+    addressController.getMyAddresses
+);
+
+router.patch(
+    '/update/:id',
+    auth(USER_ROLE.user),
+    addressController.updateAddress
+);
+
+router.delete(
+    '/delete/:id',
+    auth(USER_ROLE.user),
+    addressController.deleteAddress
 );
 
 export const addressRoutes = router;

@@ -35,6 +35,7 @@ const deleteAddress = async (userId: string, id: string) => {
     if (!result) {
         throw new AppError(httpStatus.BAD_REQUEST, 'This is not your address');
     }
+    return result;
 };
 
 const AddressServices = {

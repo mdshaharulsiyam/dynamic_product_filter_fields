@@ -1,24 +1,72 @@
-import httpStatus from "http-status";
-import catchAsync from "../../utilities/catchasync";
-import sendResponse from "../../utilities/sendResponse";
-import addressServices from "./address.service";
+import httpStatus from 'http-status';
+import sendResponse from '../../utilities/sendResponse';
+import addressServices from './address.service';
+import catchAsync from '../../utilities/catchasync';
 
-const updateUserProfile = catchAsync(async (req, res) => {
-    const { files } = req;
-    if (files && typeof files === "object" && "profile_image" in files) {
-        req.body.profile_image = files["profile_image"][0].path;
-    }
-    const result = await addressServices.updateUserProfile(
+const createAddress = catchAsync(async (req, res) => {
+    const payload = req.body;
+
+    const result = await addressServices.createAddress(
         req.user.profileId,
-        req.body
+        payload
     );
+
     sendResponse(res, {
-        statusCode: httpStatus.OK,
+        statusCode: httpStatus.CREATED,
         success: true,
-        message: "Profile updated successfully",
+        message: 'Address created successfully',
         data: result,
     });
 });
 
-const AddressController = { updateUserProfile };
+const getMyAddresses = catchAsync(async (req, res) => {
+    const result = await addressServices.getMyAddresses(req.user.profileId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Addresses fetched successfully',
+        data: result,
+    });
+});
+
+const updateAddress = catchAsync(async (req, res) => {
+    const { userId, addressId } = req.params;
+    const payload = req.body;
+
+    const result = await addressServices.updateAddress(
+        userId,
+        addressId,
+        payload
+    );
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Address updated successfully',
+        data: result,
+    });
+});
+
+const deleteAddress = catchAsync(async (req, res) => {
+    const result = await addressServices.deleteAddress(
+        req.user.profileId,
+        req.params.id
+    );
+
+    sendResponse(res, {
+        statusCode: httpStatus.NO_CONTENT,
+        success: true,
+        message: 'Address deleted successfully',
+        data: result,
+    });
+});
+
+const AddressController = {
+    createAddress,
+    getMyAddresses,
+    updateAddress,
+    deleteAddress,
+};
+
 export default AddressController;
