@@ -1,12 +1,13 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const updateAddressData = z.object({
+export const createAddressSchema = z.object({
     body: z.object({
-        name: z.string().optional(),
-        phone: z.string().optional(),
-        address: z.string().optional(),
+        neighborhood: z.string().min(1, 'Neighborhood is required'),
+        buildingOrState: z.string().min(1, 'Building or state is required'),
+        apartmentNumber: z.string().min(1, 'Apartment number is required'),
+        lebel: z.string().min(1, 'Label is required'),
     }),
 });
 
-const AddressValidations = { updateAddressData };
+const AddressValidations = { createAddressSchema };
 export default AddressValidations;
