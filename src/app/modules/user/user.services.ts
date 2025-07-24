@@ -82,7 +82,7 @@ const registerUser = async (
             email: userData.email,
             subject: 'Activate Your Account',
             html: registrationSuccessEmailBody(
-                result[0].name,
+                result[0].firstName,
                 user[0].verifyCode
             ),
         });
