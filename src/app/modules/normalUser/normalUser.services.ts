@@ -19,7 +19,10 @@ const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
 
 // get single user
 const getSingleUser = async (id: string) => {
-    const result = await NormalUser.findById(id);
+    const result = await NormalUser.findById(id).populate(
+        'user',
+        'appleId googleId'
+    );
     if (!result) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found');
     }

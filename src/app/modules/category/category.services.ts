@@ -166,7 +166,15 @@ const getAllCategories = async (query: Record<string, any>) => {
         },
         {
             $addFields: {
-                totalSubcategory: { $size: '$subcategories' },
+                totalSubcategory: {
+                    $size: {
+                        $filter: {
+                            input: '$subcategories',
+                            as: 'sub',
+                            cond: { $eq: ['$$sub.isDeleted', false] },
+                        },
+                    },
+                },
             },
         },
         {
