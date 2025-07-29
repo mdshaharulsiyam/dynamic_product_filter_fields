@@ -11,6 +11,7 @@ import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 import { albumRoutes } from '../modules/album/album.routes';
 import { categoryRoutes } from '../modules/category/category.routes';
 import { addressRoutes } from '../modules/address/address.routes';
+import { AdminRoutes } from '../modules/admin/admin.routes';
 
 const router = Router();
 
@@ -65,6 +66,10 @@ const moduleRoutes = [
     {
         path: '/address',
         router: addressRoutes,
+    },
+    {
+        path: '/admin',
+        router: AdminRoutes,
     },
 ];
 
