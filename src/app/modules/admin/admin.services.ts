@@ -126,7 +126,7 @@ const getAllAdminFromDB = async (query: Record<string, any>) => {
         Admin.find().populate('user', 'isBlocked isActive'),
         query
     )
-        .search(['storeName'])
+        .search(['name email'])
         .fields()
         .filter()
         .paginate()
