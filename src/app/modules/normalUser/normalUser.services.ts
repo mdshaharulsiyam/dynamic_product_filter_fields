@@ -32,7 +32,7 @@ const getSingleUser = async (id: string) => {
 
 const getAllUsers = async (query: Record<string, unknown>) => {
     const resultQuery = new QueryBuilder(NormalUser.find().populate("user","isBlocked"), query)
-        .search(['firstName lastName email'])
+        .search(['firstName',"lastName","email"])
         .fields()
         .filter()
         .paginate()
