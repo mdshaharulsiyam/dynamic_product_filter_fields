@@ -227,6 +227,8 @@ const getAllCategories = async (query: Record<string, any>) => {
         result,
     };
 };
+
+
 const getSingleCategory = async (id: string) => {
     const category = await Category.findById(id);
     if (!category) {

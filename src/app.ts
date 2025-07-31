@@ -44,6 +44,7 @@ app.use(
             'http://192.168.0.16:3003',
             'http://192.168.0.16:3004',
             'http://10.10.11.22:4000',
+            "http://10.10.20.54:5500"
         ],
         credentials: true,
     })
@@ -54,7 +55,7 @@ app.use('/', router);
 app.post('/contact-us', sendContactUsEmail);
 
 app.get('/', async (req, res) => {
-    res.send({ message: 'Welcome to podcast server' });
+    res.send({ message: 'Welcome to s server' });
 });
 
 // for s3 bucket--------------
