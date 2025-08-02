@@ -56,11 +56,12 @@ router.patch(
 );
 
 router.patch(
-    '/change-status/:id',
+    '/block-unblock/:id',
     auth(USER_ROLE.superAdmin),
-    validateRequest(userValidations.changeUserStatus),
     userControllers.changeUserStatus
 );
+
+
 router.delete(
     '/delete-account',
     auth(USER_ROLE.user),
