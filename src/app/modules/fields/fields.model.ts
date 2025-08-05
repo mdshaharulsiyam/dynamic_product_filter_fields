@@ -16,7 +16,7 @@ const fieldsSchema = new Schema<IFields>({
 }, { timestamps: true });
 
 fieldsSchema.pre("save", function (next) {
-  if (this.type === "select") {
+  if (this.type === "select" || this.type === "checkbox" || this.type === "radio") {
     if ((!this.options || this.options.length === 0) && !this.category) {
       throw new Error("Options or category are required for select type fields");
     }

@@ -1,25 +1,23 @@
 import express from "express";
 import auth from "../../middlewares/auth";
-import { USER_ROLE } from "../user/user.constant";
 import validateRequest from "../../middlewares/validateRequest";
-import fieldsValidations from "./fields.validation";
+import { USER_ROLE } from "../user/user.constant";
 import fieldsController from "./fields.controller";
-import { uploadFile } from "../../helper/fileUploader";
+import fieldsValidations from "./fields.validation";
 
 const router = express.Router();
 
-router.patch(
-    "/update-profile",
-    auth(USER_ROLE.user),
-    uploadFile(),
-    (req, res, next) => {
-        if (req.body.data) {
-            req.body = JSON.parse(req.body.data);
-        }
-        next();
-    },
-    validateRequest(fieldsValidations.updateFieldsData),
-    fieldsController.updateUserProfile
+router.post(
+  "/create",
+  auth(USER_ROLE.admin),
+  (req, res, next) => {
+    if (req.body.data) {
+      req.body = JSON.parse(req.body.data);
+    }
+    next();
+  },
+  validateRequest(fieldsValidations.createFieldsData),
+  fieldsController.updateUserProfile
 );
 
 export const fieldsRoutes = router;
