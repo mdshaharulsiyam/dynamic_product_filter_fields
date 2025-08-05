@@ -8,7 +8,6 @@ import { z } from "zod";
 //   is_required?: boolean;
 export const createFieldsData = z.object({
   body: z.object({
-    fieldsReference: z.string(),
     category: z.string().optional(),
     name: z.string().optional(),
     label: z.string().optional(),

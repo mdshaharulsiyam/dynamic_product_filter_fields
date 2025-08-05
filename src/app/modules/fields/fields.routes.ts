@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post(
   "/create/:fieldsReference",
-  auth(USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin),
   (req, res, next) => {
     if (req.body.data) {
       req.body = JSON.parse(req.body.data);
