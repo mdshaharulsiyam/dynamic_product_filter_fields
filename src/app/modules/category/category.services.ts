@@ -5,7 +5,6 @@ import { ICategory } from './category.interface';
 import Category from './category.model';
 import { deleteFileFromS3 } from '../../helper/deleteFromS3';
 import mongoose from 'mongoose';
-// import QueryBuilder from '../../builder/QueryBuilder';
 
 // create category into db
 const createCategoryIntoDB = async (payload: ICategory) => {
@@ -52,89 +51,6 @@ const updateCategoryIntoDB = async (
     return result;
 };
 
-// const getAllCategories = async (query: Record<string, unknown>) => {
-//     const resultQuery = new QueryBuilder(
-//         Category.find({ isDeleted: false }),
-//         query
-//     )
-//         .search(['name'])
-//         .fields()
-//         .filter()
-//         .paginate()
-//         .sort();
-
-//     const result = await resultQuery.modelQuery;
-//     const meta = await resultQuery.countTotal();
-//     return {
-//         meta,
-//         result,
-//     };
-// };
-
-// const getAllCategories = async (query: Record<string, any>) => {
-//     const page = parseInt(query.page as string) || 1;
-//     const limit = parseInt(query.limit as string) || 10;
-//     const skip = (page - 1) * limit;
-
-//     const matchConditions: any = {
-//         isDeleted: false,
-//     };
-
-//     if (query.parentCategory) {
-//         matchConditions.parentCategory = new mongoose.Types.ObjectId(
-//             query.parentCategory as string
-//         );
-//     } else {
-//         matchConditions.parentCategory = null;
-//     }
-
-//     const data = await Category.aggregate([
-//         {
-//             $match: matchConditions,
-//         },
-//         {
-//             $lookup: {
-//                 from: 'categories',
-//                 localField: '_id',
-//                 foreignField: 'parentCategory',
-//                 as: 'subcategories',
-//             },
-//         },
-//         {
-//             $addFields: {
-//                 totalSubcategory: { $size: '$subcategories' },
-//             },
-//         },
-//         {
-//             $project: {
-//                 subcategories: 0, // remove subcategories array
-//             },
-//         },
-//         {
-//             $sort: { createdAt: -1 }, // optional
-//         },
-//         {
-//             $facet: {
-//                 result: [{ $skip: skip }, { $limit: limit }],
-//                 totalCount: [{ $count: 'total' }],
-//             },
-//         },
-//     ]);
-
-//     const result = data[0]?.result || [];
-//     const total = data[0]?.totalCount[0]?.total || 0;
-//     const totalPage = Math.ceil(total / limit);
-
-//     return {
-//         meta: {
-//             page,
-//             limit,
-//             total,
-//             totalPage,
-//         },
-//         result,
-//     };
-// };
 const getAllCategories = async (query: Record<string, any>) => {
     const page = parseInt(query.page as string) || 1;
     const limit = parseInt(query.limit as string) || 10;
@@ -227,7 +143,6 @@ const getAllCategories = async (query: Record<string, any>) => {
         result,
     };
 };
-
 
 const getSingleCategory = async (id: string) => {
     const category = await Category.findById(id);
