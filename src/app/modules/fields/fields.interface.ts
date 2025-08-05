@@ -7,4 +7,5 @@ export interface IFields {
   label: string;
   type: "text" | "number" | "date" | "select" | "checkbox" | "radio" | "file";
   options?: string[];
+  is_required?: boolean;
 }

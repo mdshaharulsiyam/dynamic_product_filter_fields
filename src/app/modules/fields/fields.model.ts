@@ -16,8 +16,13 @@ const fieldsSchema = new Schema<IFields>({
 }, { timestamps: true });
 
 fieldsSchema.pre("save", function (next) {
-  if (this.type === "select" && (!this.options || this.options.length === 0) && !this.category) {
-    return next(new Error("Options or category are required for select type fields"));
+  if (this.type === "select") {
+    if ((!this.options || this.options.length === 0) && !this.category) {
+      throw new Error("Options or category are required for select type fields");
+    }
+    if (this.options && this.options.length > 0 && this.category) {
+      throw new Error("Cannot have both options and category for select type fields");
+    }
   }
   next();
 });
