@@ -12,65 +12,70 @@ import { albumRoutes } from '../modules/album/album.routes';
 import { categoryRoutes } from '../modules/category/category.routes';
 import { addressRoutes } from '../modules/address/address.routes';
 import { AdminRoutes } from '../modules/admin/admin.routes';
+import { fieldsRoutes } from '../modules/fields/fields.routes';
 
 const router = Router();
 
 const moduleRoutes = [
-    {
-        path: '/auth',
-        router: authRoutes,
-    },
-    {
-        path: '/user',
-        router: userRoutes,
-    },
-    {
-        path: '/normal-user',
-        router: normalUserRoutes,
-    },
+  {
+    path: '/auth',
+    router: authRoutes,
+  },
+  {
+    path: '/user',
+    router: userRoutes,
+  },
+  {
+    path: '/normal-user',
+    router: normalUserRoutes,
+  },
 
-    {
-        path: '/manage',
-        router: ManageRoutes,
-    },
-    {
-        path: '/notification',
-        router: notificationRoutes,
-    },
+  {
+    path: '/manage',
+    router: ManageRoutes,
+  },
+  {
+    path: '/notification',
+    router: notificationRoutes,
+  },
 
-    {
-        path: '/banner',
-        router: bannerRoutes,
-    },
-    {
-        path: '/meta',
-        router: metaRoutes,
-    },
-    {
-        path: '/feedback',
-        router: feedbackRoutes,
-    },
-    {
-        path: '/super-admin',
-        router: superAdminRoutes,
-    },
+  {
+    path: '/banner',
+    router: bannerRoutes,
+  },
+  {
+    path: '/meta',
+    router: metaRoutes,
+  },
+  {
+    path: '/feedback',
+    router: feedbackRoutes,
+  },
+  {
+    path: '/super-admin',
+    router: superAdminRoutes,
+  },
 
-    {
-        path: '/album',
-        router: albumRoutes,
-    },
-    {
-        path: '/category',
-        router: categoryRoutes,
-    },
-    {
-        path: '/address',
-        router: addressRoutes,
-    },
-    {
-        path: '/admin',
-        router: AdminRoutes,
-    },
+  {
+    path: '/album',
+    router: albumRoutes,
+  },
+  {
+    path: '/category',
+    router: categoryRoutes,
+  },
+  {
+    path: '/address',
+    router: addressRoutes,
+  },
+  {
+    path: '/admin',
+    router: AdminRoutes,
+  },
+  {
+    path: '/fields',
+    router: fieldsRoutes,
+  },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.router));

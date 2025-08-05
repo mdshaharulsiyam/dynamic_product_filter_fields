@@ -8,7 +8,7 @@ import fieldsValidations from "./fields.validation";
 const router = express.Router();
 
 router.post(
-  "/create",
+  "/create/:fieldsReference",
   auth(USER_ROLE.admin),
   (req, res, next) => {
     if (req.body.data) {
@@ -17,7 +17,7 @@ router.post(
     next();
   },
   validateRequest(fieldsValidations.createFieldsData),
-  fieldsController.updateUserProfile
+  fieldsController.createFields
 );
 
 export const fieldsRoutes = router;

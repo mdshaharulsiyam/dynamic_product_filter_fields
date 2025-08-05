@@ -1,19 +1,23 @@
 import httpStatus from "http-status";
 import AppError from "../../error/appError";
+import Category from '../category/category.model';
 import { IFields } from "./fields.interface";
 import fieldsModel from "./fields.model";
 
-const updateUserProfile = async (id: string, payload: Partial<IFields>) => {
+const createFields = async (fieldsReference: string, payload: Partial<IFields>) => {
 
-  const user = await fieldsModel.findById(id);
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "Profile not found");
+  const category = await Category.findById(fieldsReference);
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
   }
-  return await fieldsModel.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
+  if (!category.is_add_product) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Category is not allowed to add products");
+  }
+  return await fieldsModel.create({
+    fieldsReference,
+    ...payload,
   });
 };
 
-const FieldsServices = { updateUserProfile };
+const FieldsServices = { createFields };
 export default FieldsServices;
