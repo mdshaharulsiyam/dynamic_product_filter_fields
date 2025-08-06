@@ -3,6 +3,7 @@ import httpStatus from "http-status";
 import path from 'path';
 import AppError from "../../error/appError";
 import Category from '../category/category.model';
+import { invalid_fields_name } from '../Products/product.model';
 import { IFields } from "./fields.interface";
 import fieldsModel from "./fields.model";
 const MODEL_PATH = path.join(__dirname, '../Products/product.model.ts');
@@ -12,7 +13,9 @@ const INTERFACE_PATH = path.join(__dirname, '../Products/product.interface.ts');
 
 
 const createFields = async (fieldsReference: string, payload: Partial<IFields>) => {
-
+  if (invalid_fields_name.includes(payload.name as string)) {
+    throw new AppError(httpStatus.BAD_REQUEST, `Field name "${payload.name}" is not allowed.`);
+  }
   const category = await Category.findById(fieldsReference);
   if (!category) {
     throw new AppError(httpStatus.NOT_FOUND, "Category not found");
@@ -25,7 +28,7 @@ const createFields = async (fieldsReference: string, payload: Partial<IFields>) 
     category?._id?.toString(),
     payload.name as string,
     payload.is_required || false,
-    "Field is required",
+    `${payload.name} is required`,
     payload?.category ? "category" : undefined
   );
 
@@ -58,12 +61,12 @@ export async function addOrUpdateField(
       await createModel(categoryName, fieldName, required, requiredMessage, reference);
       await createInterface(categoryName, fieldName, reference);
     }
-    console.log(`Successfully added/updated field '${fieldName}' for category '${categoryName}'.`);
+
+    console.log(` Successfully added/updated field '${fieldName}' for category '${categoryName}'.`);
   } catch (error: any) {
-    console.error(`An error occurred: ${error.message}`);
+    console.error(` An error occurred: ${error.message}`);
   }
 }
-
 
 function checkIfModelExists(categoryName: string): boolean {
   const fileContent = fs.readFileSync(MODEL_PATH, 'utf-8');
@@ -75,17 +78,16 @@ function checkIfInterfaceExists(categoryName: string): boolean {
   return fileContent.includes(`export interface IProduct_${categoryName}`);
 }
 
-
 function checkIfFieldExistsInModel(category: string, field: string): boolean {
   const fileContent = fs.readFileSync(MODEL_PATH, 'utf-8');
-  const pattern = new RegExp(`const Product_${category}Schema = new Schema\\({[\\s\\S]*?\\b${field}:`, 'm');
+  const pattern = new RegExp(`Product_${category}Schema = new Schema\\({[\\s\\S]*?\\b${field}\\b`, 'm');
   return pattern.test(fileContent);
 }
 
 function checkIfFieldExistsInInterface(category: string, field: string): boolean {
-  const file = fs.readFileSync(INTERFACE_PATH, 'utf-8');
-  const pattern = new RegExp(`\\b${field}\\b`, 'm');
-  return pattern.test(file);
+  const fileContent = fs.readFileSync(INTERFACE_PATH, 'utf-8');
+  const pattern = new RegExp(`interface IProduct_${category} [\\s\\S]*?\\b${field}\\b`, 'm');
+  return pattern.test(fileContent);
 }
 
 async function updateModel(
@@ -96,53 +98,51 @@ async function updateModel(
   reference?: string
 ) {
   if (checkIfFieldExistsInModel(category, field)) {
-    console.log(`Field "${field}" already exists in the model for category "${category}". Skipping update.`);
+    console.log(` Field "${field}" already exists in model "${category}". Skipping update.`);
     return;
   }
 
   let fileContent = fs.readFileSync(MODEL_PATH, 'utf-8');
-  const schemaRegex = new RegExp(`(const Product_${category}Schema = new Schema\\({[\\s\\S]*?)(}\\);)`, 'm');
-  const match = fileContent.match(schemaRegex);
+  const regex = new RegExp(`(const Product_${category}Schema = new Schema\\(\\{)([\\s\\S]*?)(\\}\\);)`, 'm');
+  const match = fileContent.match(regex);
 
   if (match) {
-    const fieldDefinition = reference
-      ? `  ${field}: { type: mongoose.Schema.Types.ObjectId, ref: '${reference}', required: [${required},"${message}"], message: '${message}' },`
-      : `  ${field}: { type: String, required: [${required},"${message}"], message: '${message}' },`;
+    const fieldLine = reference
+      ? `  ${field}: { type: Schema.Types.ObjectId, ref: '${reference}', required: [${required}, "${message}"] },`
+      : `  ${field}: { type: String, required: [${required}, "${message}"] },`;
 
-    let fieldsContent = match[1].trim();
-    if (!fieldsContent.endsWith(',')) {
-      fieldsContent += ',';
-    }
-
-    const updatedContent = `${fieldsContent}\n${fieldDefinition}`;
-    fileContent = fileContent.replace(match[1], updatedContent);
+    const newFields = `${match[2].trim()}\n${fieldLine}`;
+    const updated = `${match[1]}\n${newFields}\n${match[3]}`;
+    fileContent = fileContent.replace(regex, updated);
 
     fs.writeFileSync(MODEL_PATH, fileContent);
   } else {
-    throw new Error(`Could not find the model schema for category "${category}" to update.`);
+    throw new Error(`Could not find schema for Product_${category}`);
   }
 }
 
 async function updateInterface(category: string, field: string, reference?: string) {
   if (checkIfFieldExistsInInterface(category, field)) {
-    console.log(`Field "${field}" already exists in the interface for category "${category}". Skipping update.`);
+    console.log(`ℹField "${field}" already exists in interface "${category}". Skipping update.`);
     return;
   }
 
   let fileContent = fs.readFileSync(INTERFACE_PATH, 'utf-8');
-  const interfaceRegex = new RegExp(`(export interface IProduct_${category} {[\\s\\S]*?)(})`, 'm');
-  const match = fileContent.match(interfaceRegex);
+  const regex = new RegExp(`(export interface IProduct_${category} \\{)([\\s\\S]*?)(\\})`, 'm');
+  const match = fileContent.match(regex);
 
   if (match) {
-    const fieldDefinition = reference
-      ? `  ${field}?: mongoose.Types.ObjectId;`
+    const fieldLine = reference
+      ? `  ${field}?: Types.ObjectId;`
       : `  ${field}?: string;`;
-    const updatedContent = `${match[1].trim()}\n${fieldDefinition}\n`;
-    fileContent = fileContent.replace(match[1], updatedContent);
+
+    const newFields = `${match[2].trim()}\n${fieldLine}`;
+    const updated = `${match[1]}\n${newFields}\n${match[3]}`;
+    fileContent = fileContent.replace(regex, updated);
 
     fs.writeFileSync(INTERFACE_PATH, fileContent);
   } else {
-    throw new Error(`Could not find the interface for category "${category}" to update.`);
+    throw new Error(`Could not find interface for IProduct_${category}`);
   }
 }
 
@@ -153,31 +153,36 @@ async function createModel(
   message: string,
   reference?: string
 ) {
-  const fieldDefinition = reference
-    ? `${field}: { type: mongoose.Schema.Types.ObjectId, ref: '${reference}', required: [${required},"${message}"], message: '${message}' }`
-    : `${field}: { type: String, required: [${required},"${message}"], message: '${message}' }`;
+  const fieldDef = reference
+    ? `${field}: { type: Schema.Types.ObjectId, ref: '${reference}', required: [${required}, "${message}"] },`
+    : `${field}: { type: String, required: [${required}, "${message}"] },`;
 
-  const modelString = `
+  const modelStr = `
 import { IProduct_${category} } from './product.interface';
-export const Product_${category}Schema = new mongoose.Schema({
-  ${fieldDefinition}
+
+const Product_${category}Schema = new Schema({
+  ${fieldDef}
 });
+
 export const Product_${category} = mongoose.model<IProduct_${category}>('Product_${category}', Product_${category}Schema);
 `;
-  fs.appendFileSync(MODEL_PATH, modelString);
+
+  fs.appendFileSync(MODEL_PATH, modelStr);
 }
 
 async function createInterface(category: string, field: string, reference?: string) {
-  const fieldDefinition = reference
-    ? `${field}?: mongoose.Types.ObjectId;`
+  const fieldDef = reference
+    ? `${field}?: Types.ObjectId;`
     : `${field}?: string;`;
 
-  const interfaceString = `
-export interface IProduct_${category} extends mongoose.Document {
-  ${fieldDefinition}
+  const interfaceStr = `
+
+export interface IProduct_${category} {
+  ${fieldDef}
 }
 `;
-  fs.appendFileSync(INTERFACE_PATH, interfaceString);
+
+  fs.appendFileSync(INTERFACE_PATH, interfaceStr);
 }
 
 const FieldsServices = { createFields };
