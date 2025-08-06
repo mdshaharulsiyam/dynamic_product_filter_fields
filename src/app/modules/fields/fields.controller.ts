@@ -6,7 +6,7 @@ import fieldsServices from "./fields.service";
 const createFields = catchAsync(async (req, res) => {
 
   const result = await fieldsServices.createFields(
-    req.params.fieldsReference,
+    req.params.id,
     req.body
   );
 

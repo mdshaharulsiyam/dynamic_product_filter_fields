@@ -7,6 +7,7 @@ import { invalid_fields_name } from '../Products/product.model';
 import { IFields } from "./fields.interface";
 import fieldsModel from "./fields.model";
 const MODEL_PATH = path.join(__dirname, '../Products/product.model.ts');
+const CONTROLLER_PATH = path.join(__dirname, '../Products/createProduct.ts');
 const INTERFACE_PATH = path.join(__dirname, '../Products/product.interface.ts');
 
 
@@ -24,14 +25,15 @@ const createFields = async (fieldsReference: string, payload: Partial<IFields>) 
     throw new AppError(httpStatus.BAD_REQUEST, "Category is not allowed to add products");
   }
 
-  await addOrUpdateField(
-    category?._id?.toString(),
-    payload.name as string,
-    payload.is_required || false,
-    `${payload.name} is required`,
-    payload?.category ? "category" : undefined
-  );
-
+  setImmediate(() => {
+    addOrUpdateField(
+      category?._id?.toString(),
+      payload.name as string,
+      payload.is_required || false,
+      `${payload.name} is required`,
+      payload?.category ? "category" : undefined
+    );
+  });
 
   return await fieldsModel.create({
     ...payload,
@@ -115,7 +117,7 @@ async function updateModel(
     const updated = `${match[1]}\n${newFields}\n${match[3]}`;
     fileContent = fileContent.replace(regex, updated);
 
-    fs.writeFileSync(MODEL_PATH, fileContent);
+    await fs.writeFileSync(MODEL_PATH, fileContent);
   } else {
     throw new Error(`Could not find schema for Product_${category}`);
   }
@@ -140,12 +142,16 @@ async function updateInterface(category: string, field: string, reference?: stri
     const updated = `${match[1]}\n${newFields}\n${match[3]}`;
     fileContent = fileContent.replace(regex, updated);
 
-    fs.writeFileSync(INTERFACE_PATH, fileContent);
+    await fs.writeFileSync(INTERFACE_PATH, fileContent);
   } else {
     throw new Error(`Could not find interface for IProduct_${category}`);
   }
 }
-
+function prependFileSync(filePath: string, contentToPrepend: string) {
+  const existingContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : '';
+  const newContent = contentToPrepend + '\n' + existingContent;
+  fs.writeFileSync(filePath, newContent, 'utf-8');
+}
 async function createModel(
   category: string,
   field: string,
@@ -166,8 +172,11 @@ const Product_${category}Schema = new Schema({
 
 export const Product_${category} = mongoose.model<IProduct_${category}>('Product_${category}', Product_${category}Schema);
 `;
-
-  fs.appendFileSync(MODEL_PATH, modelStr);
+  const controllerStr = `
+import { Product_${category} } from './product.model';
+`
+  await fs.appendFileSync(MODEL_PATH, modelStr);
+  await prependFileSync(CONTROLLER_PATH, controllerStr);
 }
 
 async function createInterface(category: string, field: string, reference?: string) {
@@ -181,8 +190,7 @@ export interface IProduct_${category} {
   ${fieldDef}
 }
 `;
-
-  fs.appendFileSync(INTERFACE_PATH, interfaceStr);
+  await fs.appendFileSync(INTERFACE_PATH, interfaceStr);
 }
 
 const FieldsServices = { createFields };
