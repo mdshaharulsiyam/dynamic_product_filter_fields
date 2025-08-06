@@ -1,18 +1,19 @@
 import { Router } from 'express';
-import { userRoutes } from '../modules/user/user.routes';
-import { authRoutes } from '../modules/auth/auth.routes';
-import { ManageRoutes } from '../modules/manage-web/manage.routes';
-import { normalUserRoutes } from '../modules/normalUser/normalUser.routes';
-import { notificationRoutes } from '../modules/notification/notification.routes';
-import { bannerRoutes } from '../modules/banner/banner.routes';
-import { metaRoutes } from '../modules/meta/meta.routes';
-import { feedbackRoutes } from '../modules/feedback/feedback.routes';
-import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
-import { albumRoutes } from '../modules/album/album.routes';
-import { categoryRoutes } from '../modules/category/category.routes';
 import { addressRoutes } from '../modules/address/address.routes';
 import { AdminRoutes } from '../modules/admin/admin.routes';
+import { albumRoutes } from '../modules/album/album.routes';
+import { authRoutes } from '../modules/auth/auth.routes';
+import { bannerRoutes } from '../modules/banner/banner.routes';
+import { categoryRoutes } from '../modules/category/category.routes';
+import { feedbackRoutes } from '../modules/feedback/feedback.routes';
 import { fieldsRoutes } from '../modules/fields/fields.routes';
+import { ManageRoutes } from '../modules/manage-web/manage.routes';
+import { metaRoutes } from '../modules/meta/meta.routes';
+import { normalUserRoutes } from '../modules/normalUser/normalUser.routes';
+import { notificationRoutes } from '../modules/notification/notification.routes';
+import { ProductRoutes } from '../modules/Products/product.routes';
+import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
+import { userRoutes } from '../modules/user/user.routes';
 
 const router = Router();
 
@@ -75,6 +76,10 @@ const moduleRoutes = [
   {
     path: '/fields',
     router: fieldsRoutes,
+  },
+  {
+    path: '/products',
+    router: ProductRoutes,
   },
 ];
 
