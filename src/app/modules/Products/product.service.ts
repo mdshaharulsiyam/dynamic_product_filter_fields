@@ -220,7 +220,7 @@ async function GetSingle(id: string) {
       },
     ]);
     return {
-      data: data[0],
+      ...data[0],
     };
   } catch (error: any) {
     throw new AppError(500, error?.message || 'Internal Server Error');
