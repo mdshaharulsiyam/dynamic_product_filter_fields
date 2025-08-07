@@ -28,9 +28,19 @@ const getAll = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getSingle = catchAsync(async (req, res) => {
+  const result = await Product_Service.GetSingle(req.params.id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Product retrieved successfully',
+    data: result,
+  });
+});
 
 const ProductController = {
   Create,
   getAll,
+  getSingle,
 };
 export default ProductController;

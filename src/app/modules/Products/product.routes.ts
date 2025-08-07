@@ -24,5 +24,10 @@ router.get(
   // auth(USER_ROLE.user),
   ProductController.getAll
 );
+router.get(
+  "/get-single/:id",
+  // auth(USER_ROLE.user),
+  ProductController.getSingle
+);
 
 export const ProductRoutes = router;
