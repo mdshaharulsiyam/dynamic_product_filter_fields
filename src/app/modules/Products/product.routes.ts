@@ -20,9 +20,9 @@ router.post(
 );
 
 router.get(
-  "/get/:fieldsReference",
+  "/get-all",
   // auth(USER_ROLE.user),
-  // fieldsController.getFields
+  ProductController.getAll
 );
 
 export const ProductRoutes = router;

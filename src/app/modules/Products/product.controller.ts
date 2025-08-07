@@ -18,7 +18,19 @@ const Create = catchAsync(async (req, res) => {
 
   });
 });
+
+const getAll = catchAsync(async (req, res) => {
+  const result = await Product_Service.GetAll(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Category retrieved successfully',
+    data: result,
+  });
+});
+
 const ProductController = {
   Create,
+  getAll,
 };
 export default ProductController;
