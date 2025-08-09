@@ -218,6 +218,25 @@ async function GetSingle(id: string) {
           preserveNullAndEmptyArrays: true,
         },
       },
+      {
+        $addFields: {
+          "location": { $toObjectId: `$location` },
+        }
+      },
+      {
+        $lookup: {
+          from: 'locations',
+          localField: "location",
+          foreignField: '_id',
+          as: 'location',
+        },
+      },
+      {
+        $unwind: {
+          path: `$location`,
+          preserveNullAndEmptyArrays: true,
+        },
+      },
     ]);
     return {
       ...data[0],
