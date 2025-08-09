@@ -3,75 +3,72 @@ import httpStatus from 'http-status';
 import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
 import catchAsync from '../../utilities/catchasync';
 import sendResponse from '../../utilities/sendResponse';
-import categoryService from './location.services';
+import locationService from './location.services';
 
-const createCategory = catchAsync(async (req, res) => {
+const createLocation = catchAsync(async (req, res) => {
+  const result = await locationService.createLocationIntoDB(req?.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Location created successfully',
+    data: result,
+  });
+});
+
+const getAllLocations = catchAsync(async (req, res) => {
+  const result = await locationService.getAllLocations(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Location retrieved successfully',
+    data: result,
+  });
+});
+
+const getSingleLocations = catchAsync(async (req, res) => {
+  const result = await locationService.getSingleLocations(req.params.id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Location retrieved successfully',
+    data: result,
+  });
+});
+
+const updateLocations = catchAsync(async (req, res) => {
   const file: any = req.files?.category_image;
   if (req.files?.category_image) {
     req.body.category_image = getCloudFrontUrl(file[0].key);
   }
-  const result = await categoryService.createCategoryIntoDB(req?.body);
-
+  const result = await locationService.updateLocationIntoDB
+    (
+      req?.params?.id,
+      req?.body
+    );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Category created successfully',
-    data: result,
-  });
-});
-
-const getAllCategories = catchAsync(async (req, res) => {
-  const result = await categoryService.getAllCategories(req.query);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Category retrieved successfully',
-    data: result,
-  });
-});
-const getSingleCategory = catchAsync(async (req, res) => {
-  const result = await categoryService.getSingleCategory(req.params.id);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Category retrieved successfully',
-    data: result,
-  });
-});
-
-const updateCategory = catchAsync(async (req, res) => {
-  const file: any = req.files?.category_image;
-  if (req.files?.category_image) {
-    req.body.category_image = getCloudFrontUrl(file[0].key);
-  }
-  const result = await categoryService.updateCategoryIntoDB(
-    req?.params?.id,
-    req?.body
-  );
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Category updated successfully',
+    message: 'Location updated successfully',
     data: result,
   });
 });
 
 // delete category
-const deleteCategory = catchAsync(async (req, res) => {
-  const result = await categoryService.deleteCategoryFromDB(req?.params?.id);
+const deleteLocation = catchAsync(async (req, res) => {
+  const result = await locationService.deleteLocationFromDB(req?.params?.id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Category deleted successfully',
+    message: 'Location deleted successfully',
     data: result,
   });
 });
 
-const categoryController = {
-  createCategory,
-  updateCategory,
-  getSingleCategory,
-  deleteCategory,
-  getAllCategories,
+const LocationController = {
+  createLocation,
+  updateLocations,
+  getSingleLocations,
+  deleteLocation,
+  getAllLocations,
 };
-export default categoryController;
+export default LocationController;

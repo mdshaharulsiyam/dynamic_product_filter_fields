@@ -3,11 +3,17 @@ import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import AppError from '../../error/appError';
 import { ILocation } from './location.interface';
-import { default as Category, default as Location } from './location.model';
+import { default as Location } from './location.model';
 
 // create category into db
-const createCategoryIntoDB = async (payload: ILocation) => {
-
+const createLocationIntoDB = async (payload: ILocation) => {
+  const { lat, lng, ...data } = payload as any
+  if (!lng || !lat) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "coordinates lat lng is required"
+    )
+  }
   if (payload.parentLocation) {
     const location = await Location.findOne({ _id: payload.parentLocation });
     if (!location) {
@@ -18,11 +24,14 @@ const createCategoryIntoDB = async (payload: ILocation) => {
     }
 
   }
-
-  const result = await Location.create({ ...payload, });
+  data.location = {
+    coordinates: [Number(lng), Number(lat)]
+  }
+  const result = await Location.create({ ...data, });
   return result;
 };
-const updateCategoryIntoDB = async (
+
+const updateLocationIntoDB = async (
   id: string,
   payload: Partial<ILocation>
 ) => {
@@ -31,7 +40,7 @@ const updateCategoryIntoDB = async (
     throw new AppError(httpStatus.NOT_FOUND, 'Location not found');
   }
 
-  const result = await Category.findByIdAndUpdate(id, payload, {
+  const result = await Location.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
   });
@@ -39,24 +48,23 @@ const updateCategoryIntoDB = async (
   return result;
 };
 
-const getAllCategories = async (query: Record<string, any>) => {
+const getAllLocations = async (query: Record<string, any>) => {
   const page = parseInt(query.page as string) || 1;
   const limit = parseInt(query.limit as string) || 10;
   const skip = (page - 1) * limit;
 
   const matchConditions: any = {
-    isDeleted: false,
   };
 
-  if (query.parentCategory) {
-    matchConditions.parentCategory = new mongoose.Types.ObjectId(
-      query.parentCategory as string
+  if (query.parentLocation) {
+    matchConditions.parentLocation = new mongoose.Types.ObjectId(
+      query.parentLocation as string
     );
   } else {
-    matchConditions.parentCategory = null;
+    matchConditions.parentLocation = null;
   }
 
-  const data = await Category.aggregate([
+  const data = await Location.aggregate([
     {
       $match: matchConditions,
     },
@@ -64,46 +72,40 @@ const getAllCategories = async (query: Record<string, any>) => {
       $lookup: {
         from: 'categories',
         localField: '_id',
-        foreignField: 'parentCategory',
-        as: 'subcategories',
+        foreignField: 'parentLocation',
+        as: 'subLocations',
       },
     },
     {
       $addFields: {
-        totalSubcategory: {
-          $size: {
-            $filter: {
-              input: '$subcategories',
-              as: 'sub',
-              cond: { $eq: ['$$sub.isDeleted', false] },
-            },
-          },
+        totalSubLocations: {
+          $size: "$subLocations",
         },
       },
     },
     {
       $lookup: {
         from: 'categories',
-        localField: 'parentCategory',
+        localField: 'parentLocation',
         foreignField: '_id',
-        as: 'parentCategoryInfo',
+        as: 'parentLocationInfo',
       },
     },
     {
       $unwind: {
-        path: '$parentCategoryInfo',
+        path: '$parentLocationInfo',
         preserveNullAndEmptyArrays: true,
       },
     },
     {
       $addFields: {
-        parentCategory: '$parentCategoryInfo',
+        parentCategory: '$parentLocationInfo',
       },
     },
     {
       $project: {
-        subcategories: 0,
-        parentCategoryInfo: 0,
+        subLocations: 0,
+        parentLocationInfo: 0,
       },
     },
     {
@@ -132,32 +134,30 @@ const getAllCategories = async (query: Record<string, any>) => {
   };
 };
 
-const getSingleCategory = async (id: string) => {
-  const category = await Category.findById(id);
+const getSingleLocations = async (id: string) => {
+  const category = await Location.findById(id);
   if (!category) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Category not found');
+    throw new AppError(httpStatus.NOT_FOUND, 'Location not found');
   }
 
   return category;
 };
 // delete category
-const deleteCategoryFromDB = async (categoryId: string) => {
-  const category = await Category.findById(categoryId);
+const deleteLocationFromDB = async (categoryId: string) => {
+  const category = await Location.findById(categoryId);
   if (!category) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Category not found');
+    throw new AppError(httpStatus.NOT_FOUND, 'Location not found');
   }
-  const result = await Category.findByIdAndUpdate(categoryId, {
-    isDeleted: true,
-  });
+  const result = await Location.findByIdAndDelete(categoryId);
   return result;
 };
 
 const categoryService = {
-  createCategoryIntoDB,
-  updateCategoryIntoDB,
-  getAllCategories,
-  getSingleCategory,
-  deleteCategoryFromDB,
+  createLocationIntoDB,
+  updateLocationIntoDB,
+  getAllLocations,
+  getSingleLocations,
+  deleteLocationFromDB,
 };
 
 export default categoryService;

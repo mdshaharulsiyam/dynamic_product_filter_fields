@@ -3,27 +3,18 @@ import { uploadFile } from '../../helper/mutler-s3-uploader';
 import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { USER_ROLE } from '../user/user.constant';
-import categoryController from './location.controller';
+import { default as LocationController } from './location.controller';
 import LocationValidation from './location.validation';
 
 const router = express.Router();
 
 router.post(
-  '/create-category',
-  // auth(USER_ROLE.superAdmin),
-  // uploadImages(),
-  uploadFile(),
-  (req: Request, res: Response, next: NextFunction) => {
-    if (req.body.data) {
-      req.body = JSON.parse(req.body.data);
-    }
-    next();
-  },
+  '/create',
   validateRequest(LocationValidation.createLocationValidationSchema),
-  categoryController.createCategory
+  LocationController.createLocation
 );
 router.patch(
-  '/update-category/:id',
+  '/update/:id',
   // auth(USER_ROLE.superAdmin),
   uploadFile(),
   (req: Request, res: Response, next: NextFunction) => {
@@ -33,15 +24,15 @@ router.patch(
     next();
   },
   validateRequest(LocationValidation.updateLocationValidationSchema),
-  categoryController.updateCategory
+  LocationController.updateLocations
 );
 
-router.get('/all-categories', categoryController.getAllCategories);
-router.get('/get-single-category/:id', categoryController.getSingleCategory);
+router.get('/get-all', LocationController.getAllLocations);
+router.get('/get-single/:id', LocationController.getSingleLocations);
 router.delete(
-  '/delete-category/:id',
+  '/delete/:id',
   auth(USER_ROLE.superAdmin),
-  categoryController.deleteCategory
+  LocationController.deleteLocation
 );
 
-export const categoryRoutes = router;
+export const locationRoutes = router;

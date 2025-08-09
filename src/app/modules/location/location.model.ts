@@ -1,38 +1,37 @@
 import { model, Schema } from 'mongoose';
-import { ICategory } from './category.interface';
+import { ILocation } from './location.interface';
 
-const CategorySchema: Schema = new Schema<ICategory>(
+const LocationSchema: Schema = new Schema<ILocation>(
   {
     name: { type: String, required: true, unique: true },
-    category_image: { type: String },
-    parentCategory: {
+    parentLocation: {
       type: Schema.Types.ObjectId,
-      ref: 'Category',
+      ref: 'Location',
       default: null,
     },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
-    is_add_product: {
-      type: Boolean,
-      default: false,
-    },
-    is_parent_adding_product: {
-      type: Boolean,
-      default: false,
+    location: {
+      type: {
+        type: String,
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        required: [true, "Coordinates are required"],
+        // default: [0, 0],
+      },
     },
   },
   {
     timestamps: true,
   }
 );
-CategorySchema.pre('save', function (next) {
+LocationSchema.pre('save', function (next) {
   if (this.is_parent_adding_product && this.is_add_product) {
-    throw new Error('sub category cannot add product if parent category is adding product');
+    throw new Error('sub Location cannot add product if parent Location is adding product');
   }
   next();
 });
-const Category = model<ICategory>('Category', CategorySchema);
+LocationSchema.index({ location: "2dsphere" });
+const Location = model<ILocation>('Location', LocationSchema);
 
-export default Category;
+export default Location;

@@ -7,6 +7,7 @@ import { bannerRoutes } from '../modules/banner/banner.routes';
 import { categoryRoutes } from '../modules/category/category.routes';
 import { feedbackRoutes } from '../modules/feedback/feedback.routes';
 import { fieldsRoutes } from '../modules/fields/fields.routes';
+import { locationRoutes } from '../modules/location/location.routes';
 import { ManageRoutes } from '../modules/manage-web/manage.routes';
 import { metaRoutes } from '../modules/meta/meta.routes';
 import { normalUserRoutes } from '../modules/normalUser/normalUser.routes';
@@ -80,6 +81,10 @@ const moduleRoutes = [
   {
     path: '/products',
     router: ProductRoutes,
+  },
+  {
+    path: '/location',
+    router: locationRoutes,
   },
 ];
 

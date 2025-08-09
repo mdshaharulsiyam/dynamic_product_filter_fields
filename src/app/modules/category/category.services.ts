@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import AppError from '../../error/appError';
 import { deleteFileFromS3 } from '../../helper/deleteFromS3';
+import fieldsModel from '../fields/fields.model';
 import { ICategory } from './category.interface';
 import Category from './category.model';
 
@@ -19,14 +20,20 @@ const createCategoryIntoDB = async (payload: ICategory) => {
       );
     }
     is_parent_adding_product = category.is_add_product || category.is_parent_adding_product;
-    if (category?.is_add_product && payload.is_add_product) {
+    if (is_parent_adding_product && payload.is_add_product) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         'Sub category cannot add product if parent category is adding product'
       );
     }
   }
-
+  if (payload.is_add_product) {
+    await fieldsModel.create({
+      name: 'location',
+      label: "location",
+      is_required: true
+    })
+  }
   const sameCategory = await Category.findOne({ name: payload.name });
 
   if (sameCategory?.isDeleted) {
