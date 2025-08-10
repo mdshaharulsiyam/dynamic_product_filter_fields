@@ -137,6 +137,7 @@ async function GetAll(query: Record<string, any>) {
     result,
   };
 }
+
 async function GetSingle(id: string) {
   try {
     const initialProduct = await Product.findById(id) as any;
@@ -245,5 +246,6 @@ async function GetSingle(id: string) {
     throw new AppError(500, error?.message || 'Internal Server Error');
   }
 }
+
 const Product_Service = { create, GetAll, GetSingle };
 export default Product_Service;
