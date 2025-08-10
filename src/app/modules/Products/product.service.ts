@@ -30,6 +30,7 @@ const create = async (fieldsReference: string, payload: any, user: string) => {
       ...payload,
       fieldsReference,
       createdBy: user,
+      isApprove: false
     });
   } catch (error: any) {
     throw new AppError(500, error?.message || 'Internal Server Error');
@@ -43,7 +44,7 @@ async function GetAll(query: Record<string, any>) {
   const { page: pages, limit: limits, categoryFields, ...filter } = query;
   const categoryFieldsArray: string[] = categoryFields ? categoryFields.split('_') : [];
   const matchConditions: any = {
-    ...filter
+    ...filter,
   };
 
   const lockups = categoryFieldsArray?.length > 0
