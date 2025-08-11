@@ -5,7 +5,7 @@ export interface IFields {
   category: Types.ObjectId;
   name: string;
   label: string;
-  type: "text" | "number" | "date" | "select" | "checkbox" | "radio" | "file";
+  type: "text" | "number" | "date" | "select" | "checkbox" | "radio" | "file" | "location";
   options?: string[];
   is_required?: boolean;
 }

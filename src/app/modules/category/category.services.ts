@@ -35,7 +35,7 @@ const createCategoryIntoDB = async (payload: ICategory) => {
       await fieldsModel.create({
         name: 'location',
         label: "location",
-        type: "text",
+        type: "location",
         fieldsReference: sameCategory?._id?.toString(),
         is_required: true
       })
