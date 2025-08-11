@@ -17,6 +17,15 @@ const createFields = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getFields = catchAsync(async (req, res) => {
+  const result = await fieldsServices.getFields(req.params.fieldsReference);
 
-const FieldsController = { createFields };
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Fields retrieved successfully",
+    data: result,
+  });
+});
+const FieldsController = { createFields, getFields };
 export default FieldsController;

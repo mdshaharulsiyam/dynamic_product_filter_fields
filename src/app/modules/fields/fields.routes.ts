@@ -20,4 +20,10 @@ router.post(
   fieldsController.createFields
 );
 
+router.get(
+  "/get/:fieldsReference",
+  // auth(USER_ROLE.user),
+  fieldsController.getFields
+);
+
 export const fieldsRoutes = router;

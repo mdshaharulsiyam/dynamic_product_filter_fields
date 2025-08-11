@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import { IFields } from "./fields.interface";
 const fieldsSchema = new Schema<IFields>({
-  fieldsReference: { type: Schema.Types.ObjectId, required: true, ref: "FieldsReference" },
+  fieldsReference: { type: Schema.Types.ObjectId, required: true, ref: "Category" },
   category: { type: Schema.Types.ObjectId, required: false, ref: "Category" },
   name: { type: String, required: true },
   label: { type: String, required: true },
