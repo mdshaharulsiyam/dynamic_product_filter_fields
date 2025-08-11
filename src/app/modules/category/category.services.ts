@@ -27,16 +27,19 @@ const createCategoryIntoDB = async (payload: ICategory) => {
       );
     }
   }
-  if (payload.is_add_product) {
-    await fieldsModel.create({
-      name: 'location',
-      label: "location",
-      is_required: true
-    })
-  }
+
   const sameCategory = await Category.findOne({ name: payload.name });
 
   if (sameCategory?.isDeleted) {
+    if (payload.is_add_product) {
+      await fieldsModel.create({
+        name: 'location',
+        label: "location",
+        type: "text",
+        fieldsReference: sameCategory?._id?.toString(),
+        is_required: true
+      })
+    }
     const result = await Category.findByIdAndUpdate(
       sameCategory._id,
       { isDeleted: false },
@@ -46,6 +49,15 @@ const createCategoryIntoDB = async (payload: ICategory) => {
   }
 
   const result = await Category.create({ ...payload, is_parent_adding_product });
+  if (payload.is_add_product) {
+    await fieldsModel.create({
+      name: 'location',
+      label: "location",
+      type: "text",
+      fieldsReference: result?._id?.toString(),
+      is_required: true
+    })
+  }
   return result;
 };
 const updateCategoryIntoDB = async (
