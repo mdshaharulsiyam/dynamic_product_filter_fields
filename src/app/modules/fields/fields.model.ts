@@ -7,7 +7,7 @@ const fieldsSchema = new Schema<IFields>({
   label: { type: String, required: true },
   type: {
     type: String,
-    enum: ["text", "number", "date", "select", "checkbox", "radio", "file"],
+    enum: ["text", "number", "date", "select", "checkbox", "radio", "file", "location"],
     required: true,
   },
   options: [{ type: String }],
