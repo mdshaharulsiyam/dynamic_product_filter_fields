@@ -31,6 +31,15 @@ const getAll = catchAsync(async (req, res) => {
         data: result,
     });
 });
+const getRecomendedProducts = catchAsync(async (req, res) => {
+    const result = await Product_Service.recomendedProducts();
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Recomended product retrieved successfully',
+        data: result,
+    });
+});
 const getSingle = catchAsync(async (req, res) => {
     const result = await Product_Service.GetSingle(req.params.id);
     sendResponse(res, {
@@ -55,5 +64,6 @@ const ProductController = {
     getAll,
     getSingle,
     deleteProduct,
+    getRecomendedProducts,
 };
 export default ProductController;

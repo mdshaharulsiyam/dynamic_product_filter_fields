@@ -25,6 +25,11 @@ router.get(
     ProductController.getAll
 );
 router.get(
+    '/get-recomended-products',
+    // auth(USER_ROLE.user),
+    ProductController.getRecomendedProducts
+);
+router.get(
     '/get-single/:id',
     // auth(USER_ROLE.user),
     ProductController.getSingle

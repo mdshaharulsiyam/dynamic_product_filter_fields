@@ -266,5 +266,21 @@ const deleteProduct = async (id: string) => {
     return product;
 };
 
-const Product_Service = { create, GetAll, GetSingle, deleteProduct };
+const recomendedProducts = async () => {
+    const result = await Product.aggregate([
+        {
+            $sample: { size: 10 },
+        },
+    ]);
+
+    return result;
+};
+
+const Product_Service = {
+    create,
+    GetAll,
+    GetSingle,
+    deleteProduct,
+    recomendedProducts,
+};
 export default Product_Service;
