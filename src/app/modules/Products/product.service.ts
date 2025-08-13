@@ -5,15 +5,16 @@ import FieldsServices from '../fields/fields.service';
 import { Product } from './product.model';
 
 const create = async (fieldsReference: string, payload: any, user: string) => {
+  const { main_category, ...data } = payload
   try {
     const fields = await FieldsServices.getFields(fieldsReference);
 
-    const providedFields = Object.keys(payload) || [];
+    const providedFields = Object.keys(data) || [];
 
     const fieldNames = fields.map(field => field?.name);
     const categoryFields = fields.filter((field: any) => field?.category?._id)?.map((field: any) => field?.name) || [];
     const validate = await verifyFields(fieldNames, providedFields);
-    const objectIdValidation = await verifyObjectIds(categoryFields, payload);
+    const objectIdValidation = await verifyObjectIds(categoryFields, data);
     if (validate.error) {
       throw new AppError(
         400,
@@ -30,7 +31,8 @@ const create = async (fieldsReference: string, payload: any, user: string) => {
       ...payload,
       fieldsReference,
       createdBy: user,
-      isApprove: false
+      isApprove: false,
+      main_category
     });
   } catch (error: any) {
     throw new AppError(500, error?.message || 'Internal Server Error');
@@ -100,6 +102,7 @@ async function GetAll(query: Record<string, any>) {
     {
       $addFields: {
         "category": { $toObjectId: `$category` },
+        "main_category": { $toObjectId: `$main_category` },
       }
     },
     {
@@ -113,6 +116,20 @@ async function GetAll(query: Record<string, any>) {
     {
       $unwind: {
         path: `$category`,
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: "main_category",
+        foreignField: '_id',
+        as: 'main_category',
+      },
+    },
+    {
+      $unwind: {
+        path: `$main_category`,
         preserveNullAndEmptyArrays: true,
       },
     },

@@ -31,15 +31,15 @@ const createCategoryIntoDB = async (payload: ICategory) => {
   const sameCategory = await Category.findOne({ name: payload.name });
 
   if (sameCategory?.isDeleted) {
-    if (payload.is_add_product) {
-      await fieldsModel.create({
-        name: 'location',
-        label: "location",
-        type: "location",
-        fieldsReference: sameCategory?._id?.toString(),
-        is_required: true
-      })
-    }
+    // if (payload.is_add_product) {
+    //   await fieldsModel.create({
+    //     name: 'location',
+    //     label: "location",
+    //     type: "location",
+    //     fieldsReference: sameCategory?._id?.toString(),
+    //     is_required: true
+    //   })
+    // }
     const result = await Category.findByIdAndUpdate(
       sameCategory._id,
       { isDeleted: false },
@@ -53,7 +53,7 @@ const createCategoryIntoDB = async (payload: ICategory) => {
     await fieldsModel.create({
       name: 'location',
       label: "location",
-      type: "text",
+      type: "location",
       fieldsReference: result?._id?.toString(),
       is_required: true
     })
