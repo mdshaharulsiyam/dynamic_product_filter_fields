@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PipelineStage } from 'mongoose';
 import AppError from '../../error/appError';
 import { verifyFields, verifyObjectIds } from '../../utilities/verifyFields';
@@ -44,37 +45,40 @@ async function GetAll(query: Record<string, any>) {
   const limit = parseInt(query.limit as string) || 10;
   const skip = (page - 1) * limit;
   const { page: pages, limit: limits, categoryFields, ...filter } = query;
-  const categoryFieldsArray: string[] = categoryFields ? categoryFields.split('_') : [];
+  const categoryFieldsArray: string[] = categoryFields
+    ? categoryFields.split('_')
+    : [];
   const matchConditions: any = {
     ...filter,
   };
 
-  const lockups = categoryFieldsArray?.length > 0
-    ? categoryFieldsArray.reduce<PipelineStage[]>((acc, field) => {
-      acc.push({
-        $addFields: {
-          [field]: { $toObjectId: `$${field}` },
-        },
-      });
+  const lockups =
+    categoryFieldsArray?.length > 0
+      ? categoryFieldsArray.reduce<PipelineStage[]>((acc, field) => {
+        acc.push({
+          $addFields: {
+            [field]: { $toObjectId: `$${field}` },
+          },
+        });
 
-      acc.push({
-        $lookup: {
-          from: 'categories',
-          localField: field,
-          foreignField: '_id',
-          as: field,
-        },
-      });
-      acc.push({
-        $unwind: {
-          path: `$${field}`,
-          preserveNullAndEmptyArrays: true,
-        },
-      });
+        acc.push({
+          $lookup: {
+            from: 'categories',
+            localField: field,
+            foreignField: '_id',
+            as: field,
+          },
+        });
+        acc.push({
+          $unwind: {
+            path: `$${field}`,
+            preserveNullAndEmptyArrays: true,
+          },
+        });
 
-      return acc;
-    }, [])
-    : [];
+        return acc;
+      }, [])
+      : [];
   const data = await Product.aggregate([
     {
       $match: matchConditions,
@@ -158,39 +162,45 @@ async function GetAll(query: Record<string, any>) {
 
 async function GetSingle(id: string) {
   try {
-    const initialProduct = await Product.findById(id) as any;
+    const initialProduct = (await Product.findById(id)) as any;
     if (!initialProduct) {
       throw new AppError(404, 'Product not found');
     }
-    const fields = await FieldsServices.getFields(initialProduct.fieldsReference);
+    const fields = await FieldsServices.getFields(
+      initialProduct.fieldsReference
+    );
 
-    const categoryFields = fields.filter((field: any) => field?.category?._id)?.map((field: any) => field?.name) || [];
-    const lockups = categoryFields?.length > 0
-      ? categoryFields.reduce<PipelineStage[]>((acc, field) => {
-        acc.push({
-          $addFields: {
-            [field]: { $toObjectId: `$${field}` },
-          },
-        });
+    const categoryFields =
+      fields
+        .filter((field: any) => field?.category?._id)
+        ?.map((field: any) => field?.name) || [];
+    const lockups =
+      categoryFields?.length > 0
+        ? categoryFields.reduce<PipelineStage[]>((acc, field) => {
+          acc.push({
+            $addFields: {
+              [field]: { $toObjectId: `$${field}` },
+            },
+          });
 
-        acc.push({
-          $lookup: {
-            from: 'categories',
-            localField: field,
-            foreignField: '_id',
-            as: field,
-          },
-        });
-        acc.push({
-          $unwind: {
-            path: `$${field}`,
-            preserveNullAndEmptyArrays: true,
-          },
-        });
+          acc.push({
+            $lookup: {
+              from: 'categories',
+              localField: field,
+              foreignField: '_id',
+              as: field,
+            },
+          });
+          acc.push({
+            $unwind: {
+              path: `$${field}`,
+              preserveNullAndEmptyArrays: true,
+            },
+          });
 
-        return acc;
-      }, [])
-      : [];
+          return acc;
+        }, [])
+        : [];
 
     const data = await Product.aggregate([
       {
@@ -201,13 +211,13 @@ async function GetSingle(id: string) {
       ...lockups,
       {
         $addFields: {
-          "createdBy": { $toObjectId: `$createdBy` },
-        }
+          createdBy: { $toObjectId: `$createdBy` },
+        },
       },
       {
         $lookup: {
           from: 'users',
-          localField: "createdBy",
+          localField: 'createdBy',
           foreignField: '_id',
           as: 'createdBy',
         },
@@ -220,13 +230,13 @@ async function GetSingle(id: string) {
       },
       {
         $addFields: {
-          "category": { $toObjectId: `$category` },
-        }
+          category: { $toObjectId: `$category` },
+        },
       },
       {
         $lookup: {
           from: 'categories',
-          localField: "category",
+          localField: 'category',
           foreignField: '_id',
           as: 'category',
         },
@@ -239,13 +249,13 @@ async function GetSingle(id: string) {
       },
       {
         $addFields: {
-          "location": { $toObjectId: `$location` },
-        }
+          location: { $toObjectId: `$location` },
+        },
       },
       {
         $lookup: {
           from: 'locations',
-          localField: "location",
+          localField: 'location',
           foreignField: '_id',
           as: 'location',
         },
@@ -265,5 +275,29 @@ async function GetSingle(id: string) {
   }
 }
 
-const Product_Service = { create, GetAll, GetSingle };
+const deleteProduct = async (id: string) => {
+  const product = await Product.findByIdAndDelete(id);
+  if (!product) {
+    throw new AppError(404, 'Product not found');
+  }
+  return product;
+};
+
+const recomendedProducts = async () => {
+  const result = await Product.aggregate([
+    {
+      $sample: { size: 10 },
+    },
+  ]);
+
+  return result;
+};
+
+const Product_Service = {
+  create,
+  GetAll,
+  GetSingle,
+  deleteProduct,
+  recomendedProducts,
+};
 export default Product_Service;
