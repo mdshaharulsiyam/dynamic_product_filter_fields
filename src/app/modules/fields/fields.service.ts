@@ -29,7 +29,7 @@ const createFields = async (fieldsReference: string, payload: Partial<IFields>) 
 };
 
 const getFields = async (fieldsReference: string) => {
-  return await fieldsModel.find({ fieldsReference }).populate('fieldsReference', 'name').populate('category', 'name');
+  return await fieldsModel.find({ fieldsReference, name: { $ne: "location" } }).populate('fieldsReference', 'name').populate('category', 'name');
 }
 
 const FieldsServices = { createFields, getFields };
